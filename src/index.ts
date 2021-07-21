@@ -1,7 +1,6 @@
 require("dotenv").config();
 require("./db_connection").connect();
-import {registerRouter} from "routes/register";
-import {authRouter} from "routes/auth";
+import {authRouter, productsRouter, registerRouter, userRouter} from './routes';
 const express = require('express')
 const app = express();
 
@@ -11,6 +10,8 @@ const port = 8080;
 app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/register', registerRouter);
+app.use('/product', productsRouter);
+app.use('/user', userRouter);
 
 app.listen(port, () => {
     infoLog(`Server started on ${port} port`)

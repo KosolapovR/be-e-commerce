@@ -1,5 +1,5 @@
 // @ts-ignore
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 // @ts-ignore
 import jwt from "jsonwebtoken";
 import express, { Request, Response, NextFunction } from 'express';
@@ -59,7 +59,6 @@ router.post('/', async function(req: Request, res: Response) {
         errorLog(err);
     }
 });
-
 
 export {
     router as registerRouter

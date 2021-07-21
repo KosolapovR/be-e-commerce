@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-export const warningLog = (s: string) => {
+const warningLog = (s: string) => {
     console.log(chalk.hex('#FFA500')(s))
 } ;
 const errorLog = (s: string) => {
@@ -11,7 +11,7 @@ const infoLog = (s: string) => {
     console.log(chalk.blueBright.bold(s));
 } ;
 
-module.exports = {
+export {
     warningLog,
     errorLog,
     infoLog,
