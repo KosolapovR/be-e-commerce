@@ -5,8 +5,9 @@ const express = require('express')
 const app = express();
 
 const {infoLog} = require("./utils/logger");
-const port = 8080;
+const port = 8163;
 
+app.use(express.static('src/assets'));
 app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/register', registerRouter);
