@@ -5,6 +5,7 @@ export interface IProduct {
     name: string,
     description?: string,
     color?: string,
+    size?: string,
     category: ICategory,
     img_src: string,
     price: number,
