@@ -1,10 +1,8 @@
 import jwt, {JsonWebTokenError} from "jsonwebtoken";
 import {errorLog, infoLog} from "../../utils/logger";
-import {NextFunction, Request, Response} from "express";
+import {NextFunction, Response} from "express";
+import {IRequestWithToken} from "../../types";
 
-export interface IRequestWithToken extends Request {
-    token?: string;
-}
 
 export const protectedRoute = (req: IRequestWithToken, res: Response, next: NextFunction) => {
     const header = req.headers['authorization'];
@@ -15,13 +13,15 @@ export const protectedRoute = (req: IRequestWithToken, res: Response, next: Next
     } else {
         res.sendStatus(403)
     }
-
-    jwt.verify(req.token, process.env.TOKEN_KEY, (err: JsonWebTokenError) => {
+    console.log('token inside ProtectedRoute', req.token)
+    jwt.verify(req.token, process.env.TOKEN_KEY, (err: JsonWebTokenError, payload) => {
         if(err){
             errorLog('ERROR: Could not connect to the protected route');
             res.sendStatus(403);
         } else {
+            console.log('payload', payload)
             infoLog('SUCCESS: Connected to protected route');
+            req.user_id = payload.user_id;
             next()
         }
     })

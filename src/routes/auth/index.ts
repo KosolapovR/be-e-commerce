@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import express, {Request, Response} from 'express';
 import {warningLog, errorLog, infoLog} from "../../utils/logger";
 import {UserModel} from "../../models/UserModel";
+import _ from 'lodash'
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ router.post('/', async function(req: Request, res: Response) {
             );
             // save user token
             user.token = token;
-            delete user.password
+
             warningLog(`user ${user.email} was authorized` )
             // return authorized user
             res.status(201).json(user);

@@ -3,9 +3,37 @@ require("./db_connection").connect();
 import {authRouter, productsRouter, registerRouter, userRouter} from './routes';
 const express = require('express')
 const app = express();
+const expressSwagger = require('express-swagger-generator')(app);
+
+const port = 8163;
+
+let options = {
+    swaggerDefinition: {
+        info: {
+            title: 'Swagger e-commerce',
+            version: '1.0.0',
+        },
+        host: `localhost:${port}`,
+        basePath: '/',
+        produces: [
+            "application/json",
+        ],
+        schemes: ['http'],
+        securityDefinitions: {
+            JWT: {
+                type: 'apiKey',
+                in: 'header',
+                name: 'Authorization',
+                description: "",
+            }
+        }
+    },
+    basedir: __dirname, //app absolute path
+    files: ['./routes/**/*.ts', './models/*.ts'] //Path to the API handle folder
+};
+expressSwagger(options)
 
 const {infoLog} = require("./utils/logger");
-const port = 8163;
 
 app.use(express.static('src/assets'));
 app.use(express.json());

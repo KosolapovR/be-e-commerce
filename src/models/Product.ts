@@ -15,9 +15,22 @@ const productSchema = new mongoose.Schema<IProduct>({
     priceWithSale: { type: Number },
     isSale: { type: Boolean, default: false }
 });
-
-const ProductModel = mongoose.model<IProduct>("product", productSchema)
+/**
+ * @typedef Product
+ * @property {string} _id
+ * @property {string} name.required
+ * @property {string} color
+ * @property {string} size
+ * @property {string} badge
+ * @property {CategoryModel.model} category
+ * @property {string} img_src.required
+ * @property {number} price.required
+ * @property {string} currency.required
+ * @property {number} priceWithSale
+ * @property {boolean} isSale
+ */
+const Product = mongoose.model<IProduct>("product", productSchema)
 
 export {
-    ProductModel
+    Product
 }
