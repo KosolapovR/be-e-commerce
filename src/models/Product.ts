@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import {IProduct} from "../interfaces/Product";
-import {categorySchema} from "./CategoryModel";
+import {categorySchema} from "./Category";
 
 const productSchema = new mongoose.Schema<IProduct>({
     name: { type: String, default: null, unique: true, required: true },
@@ -22,7 +22,7 @@ const productSchema = new mongoose.Schema<IProduct>({
  * @property {string} color
  * @property {string} size
  * @property {string} badge
- * @property {CategoryModel.model} category
+ * @property {Category.model} category
  * @property {string} img_src.required
  * @property {number} price.required
  * @property {string} currency.required

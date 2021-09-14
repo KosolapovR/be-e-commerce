@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import express, {Request, Response} from 'express';
 import {warningLog, errorLog, infoLog} from "../../utils/logger";
-import {UserModel} from "../../models/UserModel";
+import {User} from "../../models/User";
 import _ from 'lodash'
 
 const router = express.Router();
@@ -14,6 +14,15 @@ router.use(function timeLog(req, res, next) {
     next();
 });
 
+/**
+ * @route POST /auth
+ * @group Auth - Operations about auth
+ * @param {string} email.body.required
+ * @param {string} password.body.required
+ * @returns {User.model} 201
+ * @returns {Error}  400 - All input is required
+ * @returns {Error}  403 - Wrong credentials
+ */
 router.post('/', async function(req: Request, res: Response) {
     try {
         const { email, password } = req.body;
@@ -23,7 +32,7 @@ router.post('/', async function(req: Request, res: Response) {
         }
 
         warningLog(email)
-        const user = await UserModel.findOne({ email });
+        const user = await User.findOne({ email });
 
         bcrypt.compare(password, user.password, (err: string, isValid: boolean) => {
             if(err){
@@ -31,9 +40,6 @@ router.post('/', async function(req: Request, res: Response) {
             }
 
             if (!isValid) {
-                console.log('err', err)
-                console.log('isValid', isValid)
-                console.log('user', user)
                 return res.status(403).send("Wrong credentials");
             }
 
@@ -49,6 +55,7 @@ router.post('/', async function(req: Request, res: Response) {
             user.token = token;
 
             warningLog(`user ${user.email} was authorized` )
+            warningLog(`token ${token}` )
             // return authorized user
             res.status(201).json(user);
         });

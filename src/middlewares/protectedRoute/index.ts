@@ -20,6 +20,7 @@ export const protectedRoute = (req: IRequestWithToken, res: Response, next: Next
             res.sendStatus(403);
         } else {
             console.log('payload', payload)
+            console.log('req.file', req.file)
             infoLog('SUCCESS: Connected to protected route');
             req.user_id = payload.user_id;
             next()

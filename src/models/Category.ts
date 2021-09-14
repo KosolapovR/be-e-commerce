@@ -8,15 +8,15 @@ const categorySchema = new mongoose.Schema<ICategory>({
 });
 
 /**
- * @typedef CategoryModel
+ * @typedef Category
  * @property {string} _id
  * @property {string} name.required
  * @property {string} description
  * @property {string} sex
  */
-const CategoryModel = mongoose.model<ICategory>("category", categorySchema)
+const Category = mongoose.model<ICategory>("category", categorySchema)
 
 export {
-    CategoryModel,
+    Category,
     categorySchema
 }

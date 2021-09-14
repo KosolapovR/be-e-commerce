@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 // @ts-ignore
 import jwt from "jsonwebtoken";
 import express, { Request, Response, NextFunction } from 'express';
-import {UserModel} from "../../models/UserModel";
+import {User} from "../../models/User";
 
 const {errorLog} = require("../../utils/logger");
 const {warningLog} = require("../../utils/logger");
@@ -22,7 +22,7 @@ router.post('/', async function(req: Request, res: Response) {
             res.status(400).send("All input is required");
         }
 
-        const oldUser = await UserModel.findOne({ email });
+        const oldUser = await User.findOne({ email });
 
         if (oldUser) {
             return res.status(409).send("User Already Exist. Please Login");
@@ -32,7 +32,7 @@ router.post('/', async function(req: Request, res: Response) {
         const encryptedPassword = await bcrypt.hash(password, 10);
 
         // Create user in our database
-        const user = await UserModel.create({
+        const user = await User.create({
             first_name,
             last_name,
             email: email.toLowerCase(),

@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 import {IUser} from "../interfaces/User";
 
 const userSchema = new mongoose.Schema<IUser>({
+    _id: {type: String, required: true},
     first_name: { type: String, default: null },
     last_name: { type: String, default: null },
     email: { type: String, unique: true },
@@ -16,8 +17,17 @@ userSchema.methods.toJSON = function() {
     return obj;
 }
 
-const UserModel = mongoose.model<IUser>("user", userSchema)
+/**
+ * @typedef User
+ * @property {string} _id.required
+ * @property {string} first_name
+ * @property {string} last_name
+ * @property {string} email
+ * @property {string} token
+ * @property {string} avatar
+ */
+const User = mongoose.model<IUser>("user", userSchema)
 
 export {
-    UserModel
+    User
 }
