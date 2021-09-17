@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema<IProduct>({
     category: categorySchema,
     img_src: { type: String, required: true },
     price: { type: Number, required: true },
-    currency: { type: String, required: true },
+    currency: { type: String, default: 'RUB' },
     priceWithSale: { type: Number },
     isSale: { type: Boolean, default: false }
 });
@@ -32,5 +32,6 @@ const productSchema = new mongoose.Schema<IProduct>({
 const Product = mongoose.model<IProduct>("product", productSchema)
 
 export {
+    productSchema,
     Product
 }

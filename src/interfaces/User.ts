@@ -1,3 +1,11 @@
+import {IOrder} from "./Order";
+
+interface INotifications {
+    sales: boolean,
+    newArrivals: boolean,
+    deliveryStatusChanges: boolean,
+}
+
 export interface IUser {
     _id: string,
     first_name: string,
@@ -6,4 +14,6 @@ export interface IUser {
     password?: string,
     token: string,
     avatar: string,
+    notifications: INotifications
+    orders: IOrder[]
 }

@@ -13,14 +13,11 @@ export const protectedRoute = (req: IRequestWithToken, res: Response, next: Next
     } else {
         res.sendStatus(403)
     }
-    console.log('token inside ProtectedRoute', req.token)
     jwt.verify(req.token, process.env.TOKEN_KEY, (err: JsonWebTokenError, payload) => {
         if(err){
             errorLog('ERROR: Could not connect to the protected route');
             res.sendStatus(403);
         } else {
-            console.log('payload', payload)
-            console.log('req.file', req.file)
             infoLog('SUCCESS: Connected to protected route');
             req.user_id = payload.user_id;
             next()

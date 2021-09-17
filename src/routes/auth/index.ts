@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs";
 // @ts-ignore
 import jwt from "jsonwebtoken";
 import express, {Request, Response} from 'express';
-import {warningLog, errorLog, infoLog} from "../../utils/logger";
+import {body} from "express-validator";
+import {warningLog, errorLog} from "../../utils/logger";
 import {User} from "../../models/User";
-import _ from 'lodash'
 
 const router = express.Router();
 
@@ -23,7 +23,10 @@ router.use(function timeLog(req, res, next) {
  * @returns {Error}  400 - All input is required
  * @returns {Error}  403 - Wrong credentials
  */
-router.post('/', async function(req: Request, res: Response) {
+router.post('/',
+    body('email').isEmail().normalizeEmail(),
+    body('password').not().isEmpty().trim(),
+    async function(req: Request, res: Response) {
     try {
         const { email, password } = req.body;
 

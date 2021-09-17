@@ -5,6 +5,11 @@ import {User} from "../../models/User";
 import {IRequestWithToken} from "../../types";
 import getAvatar from "../../utils/imageRetriever/getAvatar";
 import {protectedRoute} from "../../middlewares/protectedRoute";
+import {IUser} from "../../interfaces/User";
+import {IOrder} from "../../interfaces/Order";
+import {check, oneOf, validationResult,} from "express-validator";
+import {Order} from "../../models/Order";
+import {Error} from "mongoose";
 
 
 const router = express.Router();
@@ -45,7 +50,6 @@ router.get('/', function(req: Request, res: Response) {
  * @security JWT
  */
 router.post('/avatar', async function (req: IRequestWithToken, res: Response) {
-    const {token} = req;
     try {
         await upload(req, res);
 
@@ -53,14 +57,21 @@ router.post('/avatar', async function (req: IRequestWithToken, res: Response) {
             return res.send(`You must select a file.`);
         }
 
+        User.findOneAndUpdate({_id: req.user_id},{$set:{avatar:req.file.filename}},{new:true}, (err, doc) =>{
+            if(err){
+                console.log(err);
+                return res.send(`Error when trying upload image: ${err}`);
+            }
 
-        const docs = await User.findOneAndUpdate({token},{$set:{avatar:req.file.filename}},{new:true})
+            if(!doc){
+                errorLog('no such user exist')
+                return res.send(`no such user exist`);
+            }
 
-        if(!docs){
-            errorLog('no such user exist')
-        }
+            return res.send({data: doc});
+        })
 
-        return res.send(`File has been uploaded.`);
+
     } catch (error) {
         console.log(error);
         return res.send(`Error when trying upload image: ${error}`);
@@ -70,22 +81,67 @@ router.post('/avatar', async function (req: IRequestWithToken, res: Response) {
 /**
  * @route GET /user/avatar
  * @group User - Operations about user
- * @param {string} id - img filename
  * @returns {object} 200 - base64data
  * @returns {Error}  default - Unexpected error
  * @security JWT
  */
-router.get('/avatar/:id', async function(req: Request, res: Response) {
-    const filename = req.params.id;
+router.get('/avatar', async function(req: IRequestWithToken, res: Response) {
+    const userDoc: IUser = await User.findById(req.user_id)
+    if(!userDoc){
+        return res.sendStatus(404);
+    }
+    const filename = userDoc.avatar;
     const {error, data} = await getAvatar(filename)
 
     if(error){
         return res.sendStatus(404);
     }
 
-    res.send({base64data: data})
+    res.send({data})
 });
 
 export {
     router as userRouter
 };
+
+/**
+ * @route POST /user/order
+ * @group User - Operations about user
+ * @param {string} openDate.body.required
+ * @param {string} totalAmount.body.required
+ * @param {number} quantity.body.required
+ * @param {string} trackingNumber.body
+ * @param {string} deliveryStatus.body
+ * @param {string} currency.body
+ * @param {Array.<Product>} products.body
+ * @param {DeliveryMethod.model} deliveryMethod.body.required
+ * @param {PaymentMethod.model} paymentMethod.body.required
+ * @param {ShippingAddress.model} shippingAddress.body.required
+ * @returns {string} 200
+ * @returns {Error}  default - Unexpected error
+ * @security JWT
+ */
+router.post('/order', check(['openDate', 'totalAmount', 'deliveryMethod', 'paymentMethod', 'quantity', 'shippingAddress', 'products']).notEmpty(), async (req: IRequestWithToken, res: Response) => {
+    try {
+        validationResult(req).throw();
+        const {openDate, totalAmount, currency, deliveryMethod, deliveryStatus, paymentMethod, quantity, shippingAddress, trackingNumber, products } : IOrder = req.body
+
+        const createdOrder = await Order.create({openDate, totalAmount, currency, deliveryMethod, deliveryStatus, paymentMethod, quantity, shippingAddress, trackingNumber, products })
+        if(createdOrder){
+            const {user_id} = req
+            User.findByIdAndUpdate(user_id, {$push: {"orders": createdOrder}},
+                {new: true}, (err: Error, doc: IUser) => {
+                if(!doc || err){
+                    res.status(400).json({error: `cannot add order to user`});
+                }
+                if(doc){
+                    res.send({data: doc});
+                }
+            })
+        }else{
+            res.status(400);
+        }
+    } catch ({errors}) {
+        res.status(400).json({errors});
+    }
+})

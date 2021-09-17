@@ -11,5 +11,5 @@ export interface IProduct {
     price: number,
     currency: string,
     priceWithSale?: number,
-    isSale: boolean
+    isSale?: boolean
 }

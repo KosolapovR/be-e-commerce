@@ -1,14 +1,15 @@
 import * as mongoose from "mongoose";
 import {IUser} from "../interfaces/User";
+import {orderSchema} from "./Order";
 
 const userSchema = new mongoose.Schema<IUser>({
-    _id: {type: String, required: true},
     first_name: { type: String, default: null },
     last_name: { type: String, default: null },
     email: { type: String, unique: true },
     password: { type: String },
     token: { type: String },
-    avatar: {type: String}
+    avatar: {type: String},
+    orders: [orderSchema]
 });
 
 userSchema.methods.toJSON = function() {
@@ -25,9 +26,11 @@ userSchema.methods.toJSON = function() {
  * @property {string} email
  * @property {string} token
  * @property {string} avatar
+ * @property {Array.<Order>} orders
  */
 const User = mongoose.model<IUser>("user", userSchema)
 
 export {
+    userSchema,
     User
 }
